@@ -1,1 +1,59 @@
+name: Marinha Update Tweet
+
+on:
+  schedule:
+    - cron: '0 * * * *'  # Executa a cada hora
+  workflow_dispatch:  # Permite execução manual
+
+jobs:
+  tweet:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests beautifulsoup4 tweepy
+
+    - name: Fetch and Tweet Marinha Updates
+      env:
+        TWITTER_CONSUMER_KEY: ${{ secrets.TWITTER_CONSUMER_KEY }}
+        TWITTER_CONSUMER_SECRET: ${{ secrets.TWITTER_CONSUMER_SECRET }}
+        TWITTER_ACCESS_TOKEN: ${{ secrets.TWITTER_ACCESS_TOKEN }}
+        TWITTER_ACCESS_TOKEN_SECRET: ${{ secrets.TWITTER_ACCESS_TOKEN_SECRET }}
+      run: |
+        python - <<EOF
+        import os
+        import requests
+        from bs4 import BeautifulSoup
+        import tweepy
+
+        # Função para fazer scraping do site da Marinha
+        def get_marinha_updates():
+            url = 'URL_DO_SITE_DA_MARINHA'
+            response = requests.get(url)
+            soup = BeautifulSoup(response.text, 'html.parser')
+            # Lógica de scraping dependendo da estrutura do site
+            updates = soup.select('CSS_SELECTOR_DAS_ATUALIZACOES')
+            return [update.text for update in updates[:5]]  # Pega as 5 primeiras atualizações
+
+        # Autenticação no Twitter
+        auth = tweepy.OAuthHandler(os.getenv('TWITTER_CONSUMER_KEY'), os.getenv('TWITTER_CONSUMER_SECRET'))
+        auth.set_access_token(os.getenv('TWITTER_ACCESS_TOKEN'), os.getenv('TWITTER_ACCESS_TOKEN_SECRET'))
+        api = tweepy.API(auth)
+
+        # Busca atualizações e posta no Twitter
+        updates = get_marinha_updates()
+        for update in updates:
+            api.update_status(update)
+
+        EOF
 
