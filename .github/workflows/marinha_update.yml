@@ -41,7 +41,7 @@ jobs:
 
         # Função para fazer scraping do site da Marinha
         def get_marinha_updates():
-            url = 'URL_DO_SITE_DA_MARINHA'
+            url = 'https://www.marinha.mil.br/chm/dados-do-smm-avisos-de-mau-tempo'
             response = requests.get(url)
             soup = BeautifulSoup(response.text, 'html.parser')
             # Lógica de scraping dependendo da estrutura do site
