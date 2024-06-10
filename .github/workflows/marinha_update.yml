@@ -29,9 +29,9 @@ jobs:
     - name: Fetch and Tweet Marinha Updates
       env:
         TWITTER_CONSUMER_KEY: ${{ secrets.TWITTER_CONSUMER_KEY }}
-        TWITTER_CONSUMER_SECRET: ${{ secrets.API_KEY_SECRET  }}
-        TWITTER_ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN  }}
-        TWITTER_ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET  }}
+        TWITTER_CONSUMER_SECRET: ${{ secrets.API_KEY_SECRET }}
+        TWITTER_ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+        TWITTER_ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
       run: |
         python - <<EOF
         import os
@@ -50,26 +50,23 @@ jobs:
                 return super(TLSAdapter, self).init_poolmanager(*args, **kwargs)
 
         def get_marinha_updates():
-           # url = 'https://www.marinha.mil.br/chm/dados-do-smm-avisos-de-mau-tempo'
-           # s = requests.Session()
-           # s.mount('https://', TLSAdapter())
+          #  url = 'https://www.marinha.mil.br/chm/dados-do-smm-avisos-de-mau-tempo'
+          #  s = requests.Session()
+          #  s.mount('https://', TLSAdapter())
            # response = s.get(url)
            # if response.status_code != 200:
-            #    print(f"Erro ao acessar {url}: {response.status_code}")
-           #     return []
-           # soup = BeautifulSoup(response.text, 'html.parser')
-          #  updates = soup.select('CSS_SELECTOR_DAS_ATUALIZACOES')
-            return 'tweet de teste' # Pega as 5 primeiras atualizações
+           #     print(f"Erro ao acessar {url}: {response.status_code}")
+            #    return []
+            #soup = BeautifulSoup(response.text, 'html.parser')
+            # updates = soup.select('CSS_SELECTOR_DAS_ATUALIZACOES')
+            return 'teste!!!'  # Pega as 5 primeiras atualizações
 
         def tweet_update(update):
-            client = tweepy.Client(
-                consumer_key=os.getenv('TWITTER_CONSUMER_KEY'),
-                consumer_secret=os.getenv('TWITTER_CONSUMER_SECRET'),
-                access_token=os.getenv('TWITTER_ACCESS_TOKEN'),
-                access_token_secret=os.getenv('TWITTER_ACCESS_TOKEN_SECRET')
-            )
-            response = client.create_tweet(text=update)
-            print(f"Tweetado: {response.data['id']}")
+            auth = tweepy.OAuthHandler(os.getenv('TWITTER_CONSUMER_KEY'), os.getenv('TWITTER_CONSUMER_SECRET'))
+            auth.set_access_token(os.getenv('TWITTER_ACCESS_TOKEN'), os.getenv('TWITTER_ACCESS_TOKEN_SECRET'))
+            api = tweepy.API(auth)
+            api.update_status(update)
+            print(f"Tweetado: {update}")
 
         updates = get_marinha_updates()
         if updates:
