@@ -41,12 +41,13 @@ jobs:
 
         # Função para fazer scraping do site da Marinha
         def get_marinha_updates():
-            url = 'https://www.marinha.mil.br/chm/dados-do-smm-avisos-de-mau-tempo'
-            response = requests.get(url)
-            soup = BeautifulSoup(response.text, 'html.parser')
+           # url = 'https://www.marinha.mil.br/chm/dados-do-smm-avisos-de-mau-tempo'
+           # response = requests.get(url)
+           # soup = BeautifulSoup(response.text, 'html.parser')
             # Lógica de scraping dependendo da estrutura do site
-            updates = soup.select('CSS_SELECTOR_DAS_ATUALIZACOES')
-            return [update.text for update in updates[:5]]  # Pega as 5 primeiras atualizações
+           # updates = soup.select('CSS_SELECTOR_DAS_ATUALIZACOES')
+           # return [update.text for update in updates[:5]]  # Pega as 5 primeiras atualizações
+           return 'tweet de teste'
 
         # Autenticação no Twitter
         auth = tweepy.OAuthHandler(os.getenv('TWITTER_CONSUMER_KEY'), os.getenv('TWITTER_CONSUMER_SECRET'))
